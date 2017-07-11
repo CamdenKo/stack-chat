@@ -20,7 +20,6 @@ export default class Main extends Component {
       <Provider store = {store}>
         <div>
           <Sidebar />
-          <Navbar />
           <main>
             <Switch>
               <Route path="/new-channel" component={NewChannelEntry} />

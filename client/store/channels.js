@@ -16,6 +16,7 @@ export function getChannel (channel){
   return action;
 }
 
+
 export function fetchChannels () {
   return function thunk (dispatch){
     return axios.get('/api/channels')
@@ -31,10 +32,8 @@ export function postChannel (channelName, history) {
     return axios.post('/api/channels', channelName )
     .then(res => res.data)
     .then(newChannel => {
-      console.log('inside axios', newChannel)
       dispatch(getChannel(newChannel))
       socket.emit('new-channel', newChannel)
-      console.log('newchannel.id', newChannel.id)
       history.push(`/channels/${newChannel.id}`)
     })
   }

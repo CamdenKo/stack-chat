@@ -17850,7 +17850,6 @@ var Main = function (_Component) {
           'div',
           null,
           _react2.default.createElement(_Sidebar2.default, null),
-          _react2.default.createElement(_Navbar2.default, null),
           _react2.default.createElement(
             'main',
             null,
@@ -17949,6 +17948,10 @@ var _store2 = _interopRequireDefault(_store);
 
 var _reactRedux = __webpack_require__(74);
 
+var _Navbar = __webpack_require__(171);
+
+var _Navbar2 = _interopRequireDefault(_Navbar);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function MessagesList(props) {
@@ -17962,6 +17965,7 @@ function MessagesList(props) {
   return _react2.default.createElement(
     'div',
     null,
+    _react2.default.createElement(_Navbar2.default, null),
     _react2.default.createElement(
       'ul',
       { className: 'media-list' },
@@ -18052,12 +18056,15 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports.Navbar = Navbar;
 
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(74);
+
+var _reactRouter = __webpack_require__(10);
 
 var _store = __webpack_require__(19);
 
@@ -18069,41 +18076,30 @@ var _NameEntry2 = _interopRequireDefault(_NameEntry);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function Navbar(props) {
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  return _react2.default.createElement(
+    'nav',
+    null,
+    _react2.default.createElement(
+      'h3',
+      null,
+      props.currentChannel.name
+    ),
+    _react2.default.createElement(_NameEntry2.default, null)
+  );
+}
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function mapStateToProps(state, oldProps) {
+  var channelId = oldProps.match.params.channelId;
+  return {
+    currentChannel: state.channels.find(function (channel) {
+      return +channel.id === +channelId;
+    }) || {}
+  };
+}
 
-var Navbar = function (_Component) {
-  _inherits(Navbar, _Component);
-
-  function Navbar() {
-    _classCallCheck(this, Navbar);
-
-    return _possibleConstructorReturn(this, (Navbar.__proto__ || Object.getPrototypeOf(Navbar)).apply(this, arguments));
-  }
-
-  _createClass(Navbar, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'nav',
-        null,
-        _react2.default.createElement(
-          'h3',
-          null,
-          '# channelname goes here'
-        ),
-        _react2.default.createElement(_NameEntry2.default, null)
-      );
-    }
-  }]);
-
-  return Navbar;
-}(_react.Component);
-
-exports.default = Navbar;
+exports.default = (0, _reactRouter.withRouter)((0, _reactRedux.connect)(mapStateToProps)(Navbar));
 
 /***/ }),
 /* 172 */
@@ -18455,10 +18451,8 @@ function postChannel(channelName, history) {
     return _axios2.default.post('/api/channels', channelName).then(function (res) {
       return res.data;
     }).then(function (newChannel) {
-      console.log('inside axios', newChannel);
       dispatch(getChannel(newChannel));
       _socket2.default.emit('new-channel', newChannel);
-      console.log('newchannel.id', newChannel.id);
       history.push('/channels/' + newChannel.id);
     });
   };

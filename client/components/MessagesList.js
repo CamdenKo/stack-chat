@@ -3,6 +3,7 @@ import Message from './Message';
 import NewMessageEntry from './NewMessageEntry';
 import store from '../store';
 import { connect } from 'react-redux'
+import Navbar from './Navbar'
 
 export function MessagesList (props) {
 
@@ -13,6 +14,7 @@ export function MessagesList (props) {
 
     return (
       <div>
+        <Navbar />
         <ul className="media-list">
           { filteredMessages.map(message => <Message message={message} key={message.id} />) }
         </ul>
@@ -22,7 +24,7 @@ export function MessagesList (props) {
   }
 
 function mapStateToProps(state, oldProps){
-  return{
+  return {
     messages: state.messages,
     channelId: oldProps.match.params.channelId
   }
