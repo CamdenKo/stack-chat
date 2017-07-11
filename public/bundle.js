@@ -2978,7 +2978,7 @@ exports.getMessages = getMessages;
 exports.writeMessage = writeMessage;
 exports.getChannels = getChannels;
 exports.getChannel = getChannel;
-exports.createChannel = createChannel;
+exports.makeChannel = makeChannel;
 exports.fetchMessages = fetchMessages;
 exports.postMessage = postMessage;
 exports.fetchChannels = fetchChannels;
@@ -3062,7 +3062,7 @@ function getChannel(channel) {
   return action;
 }
 
-function createChannel(channelName) {
+function makeChannel(channelName) {
   var action = { type: MAKE_CHANNEL, channelName: channelName };
   return action;
 }
@@ -3082,6 +3082,7 @@ function fetchMessages() {
 }
 
 function postMessage(message) {
+  console.log('message', message);
 
   return function thunk(dispatch) {
     return _axios2.default.post('/api/messages', message).then(function (res) {
@@ -3104,12 +3105,16 @@ function fetchChannels() {
   };
 }
 
-function postChannel(channelName) {
+function postChannel(channelName, history) {
   return function thunk(dispatch) {
     return _axios2.default.post('/api/channels', channelName).then(function (res) {
       return res.data;
     }).then(function (newChannel) {
+      console.log('inside axios', newChannel);
       dispatch(getChannel(newChannel));
+      _socket2.default.emit('new-channel', newChannel);
+      console.log('newchannel.id', newChannel.id);
+      history.push('/channels/' + newChannel.id);
     });
   };
 }
@@ -18281,10 +18286,75 @@ exports.default = Navbar;
 
 /***/ }),
 /* 171 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-throw new Error("Module build failed: SyntaxError: Unexpected token (23:20)\n\n\u001b[0m \u001b[90m 21 | \u001b[39m\u001b[36mconst\u001b[39m mapStateToProps \u001b[33m=\u001b[39m \u001b[36mfunction\u001b[39m (state) {\n \u001b[90m 22 | \u001b[39m  \u001b[36mreturn\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 | \u001b[39m    newChannelEntry \u001b[33m=\u001b[39m state\u001b[33m.\u001b[39mnewChannelEntry\n \u001b[90m    | \u001b[39m                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 | \u001b[39m  }\n \u001b[90m 25 | \u001b[39m}\n \u001b[90m 26 | \u001b[39m\u001b[36mconst\u001b[39m mapDispatchToProps \u001b[33m=\u001b[39m \u001b[36mfunction\u001b[39m (dispatch) {\u001b[0m\n");
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _reactRedux = __webpack_require__(122);
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _store = __webpack_require__(22);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function NewChannelEntry(props) {
+
+  return _react2.default.createElement(
+    'form',
+    { onSubmit: props.channelSend },
+    _react2.default.createElement(
+      'div',
+      { className: 'form-group' },
+      _react2.default.createElement(
+        'label',
+        { htmlFor: 'name' },
+        'Create a Channel'
+      ),
+      _react2.default.createElement('input', { className: 'form-control', type: 'text', name: 'channelName', placeholder: 'Enter channel name', onChange: props.handleChange,
+        value: props.newChannelEntry })
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'form-group' },
+      _react2.default.createElement(
+        'button',
+        { type: 'submit', className: 'btn btn-default' },
+        'Create Channel'
+      )
+    )
+  );
+}
+
+/** Write your `connect` component below! **/
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    newChannelEntry: state.newChannelEntry,
+    history: ownProps.history
+  };
+};
+var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+  return {
+    handleChange: function handleChange(evt) {
+      dispatch((0, _store.makeChannel)(evt.target.value));
+    },
+    channelSend: function channelSend(evt) {
+      evt.preventDefault();
+      dispatch((0, _store.postChannel)({ name: evt.target.channelName.value }, ownProps.history));
+      dispatch((0, _store.makeChannel)(''));
+    }
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(NewChannelEntry);
 
 /***/ }),
 /* 172 */
@@ -18534,6 +18604,10 @@ socket.on('connect', function () {
 
   socket.on('new-message', function (message) {
     _store2.default.dispatch((0, _store.getMessage)(message));
+  });
+
+  socket.on('new-channel', function (channel) {
+    _store2.default.dispatch((0, _store.getChannel)(channel));
   });
 });
 

@@ -59,7 +59,7 @@ export function getChannel (channel){
   return action;
 }
 
-export function createChannel (channelName) {
+export function makeChannel (channelName) {
   const action = { type: MAKE_CHANNEL, channelName};
   return action;
 }
@@ -79,6 +79,7 @@ export function fetchMessages () {
 }
 
 export function postMessage (message) {
+  console.log('message',message)
 
   return function thunk (dispatch) {
     return axios.post('/api/messages', message)
@@ -101,12 +102,16 @@ export function fetchChannels () {
   }
 }
 
-export function postChannel (channelName) {
+export function postChannel (channelName, history) {
   return function thunk (dispatch) {
-    return axios.post('/api/channels', channelName)
+    return axios.post('/api/channels', channelName )
     .then(res => res.data)
     .then(newChannel => {
+      console.log('inside axios', newChannel)
       dispatch(getChannel(newChannel))
+      socket.emit('new-channel', newChannel)
+      console.log('newchannel.id', newChannel.id)
+      history.push(`/channels/${newChannel.id}`)
     })
   }
 }
