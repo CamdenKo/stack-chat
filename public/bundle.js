@@ -17704,9 +17704,7 @@ module.exports = function spread(callback) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ChannelList = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports.ChannelList = ChannelList;
 
 var _react = __webpack_require__(4);
 
@@ -17724,91 +17722,49 @@ var _reactRouter = __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function ChannelList(props) {
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// These values are all hardcoded...for now!
-// Soon, we'll fetch them from the server!
-// const RANDOM_CHANNEL = '/channels/1';
-// const GENERAL_CHANNEL = '/channels/2';
-// const DOGS_CHANNEL = '/channels/3';
-// const LUNCH_CHANNEL = '/channels/4';
-
-var ChannelList = exports.ChannelList = function (_Component) {
-  _inherits(ChannelList, _Component);
-
-  function ChannelList() {
-    _classCallCheck(this, ChannelList);
-
-    var _this = _possibleConstructorReturn(this, (ChannelList.__proto__ || Object.getPrototypeOf(ChannelList)).call(this));
-
-    _this.state = _store2.default.getState();
-
-    return _this;
-  }
-
-  // componentDidMount () {
-  //   this.unsubscribe = store.subscribe(() => this.setState(store.getState()));
-  // }
-
-  // componentWillUnmount () {
-  //   this.unsubscribe();
-  // }
-
-  _createClass(ChannelList, [{
-    key: 'render',
-    value: function render() {
-
-      var messages = this.props.messages;
+  var messages = props.messages;
+  return _react2.default.createElement(
+    'ul',
+    null,
+    props.channels.map(function (channel) {
       return _react2.default.createElement(
-        'ul',
-        null,
-        this.props.channels.map(function (channel) {
-          return _react2.default.createElement(
-            'li',
-            { key: channel.id },
-            _react2.default.createElement(
-              _reactRouterDom.NavLink,
-              { to: '/channels/' + channel.id, activeClassName: 'active' },
-              _react2.default.createElement(
-                'span',
-                null,
-                '# ',
-                channel.name
-              ),
-              _react2.default.createElement(
-                'span',
-                { className: 'badge' },
-                messages.filter(function (message) {
-
-                  return +message.channelId === +channel.id;
-                }).length
-              )
-            )
-          );
-        }),
+        'li',
+        { key: channel.id },
         _react2.default.createElement(
-          'li',
-          null,
+          _reactRouterDom.NavLink,
+          { to: '/channels/' + channel.id, activeClassName: 'active' },
           _react2.default.createElement(
-            _reactRouterDom.NavLink,
-            { to: '/new-channel' },
-            'Create a channel...'
+            'span',
+            null,
+            '# ',
+            channel.name
+          ),
+          _react2.default.createElement(
+            'span',
+            { className: 'badge' },
+            messages.filter(function (message) {
+
+              return +message.channelId === +channel.id;
+            }).length
           )
         )
       );
-    }
-  }]);
-
-  return ChannelList;
-}(_react.Component);
+    }),
+    _react2.default.createElement(
+      'li',
+      null,
+      _react2.default.createElement(
+        _reactRouterDom.NavLink,
+        { to: '/new-channel' },
+        'Create a channel...'
+      )
+    )
+  );
+}
 
 /** Write your `connect` component below! **/
-
-
 exports.default = (0, _reactRouter.withRouter)((0, _reactRedux.connect)(mapStateToProps)(ChannelList));
 
 
@@ -17973,8 +17929,7 @@ function Message(props) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports.MessagesList = MessagesList;
 
 var _react = __webpack_require__(4);
 
@@ -17992,72 +17947,103 @@ var _store = __webpack_require__(19);
 
 var _store2 = _interopRequireDefault(_store);
 
+var _reactRedux = __webpack_require__(74);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function MessagesList(props) {
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  var channelId = Number(props.channelId); // because it's a string "1", not a number!
+  var messages = props.messages;
+  var filteredMessages = messages.filter(function (message) {
+    return message.channelId === channelId;
+  });
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'ul',
+      { className: 'media-list' },
+      filteredMessages.map(function (message) {
+        return _react2.default.createElement(_Message2.default, { message: message, key: message.id });
+      })
+    ),
+    _react2.default.createElement(_NewMessageEntry2.default, { channelId: channelId })
+  );
+}
 
-var Messages = function (_Component) {
-  _inherits(Messages, _Component);
+function mapStateToProps(state, oldProps) {
+  return {
+    messages: state.messages,
+    channelId: oldProps.match.params.channelId
+  };
+}
 
-  function Messages() {
-    _classCallCheck(this, Messages);
-
-    var _this = _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).call(this));
-
-    _this.state = _store2.default.getState();
-    return _this;
-  }
-
-  _createClass(Messages, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.unsubscribe = _store2.default.subscribe(function () {
-        return _this2.setState(_store2.default.getState());
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      this.unsubscribe();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-
-      var channelId = Number(this.props.match.params.channelId); // because it's a string "1", not a number!
-      var messages = this.state.messages;
-      var filteredMessages = messages.filter(function (message) {
-        return message.channelId === channelId;
-      });
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'ul',
-          { className: 'media-list' },
-          filteredMessages.map(function (message) {
-            return _react2.default.createElement(_Message2.default, { message: message, key: message.id });
-          })
-        ),
-        _react2.default.createElement(_NewMessageEntry2.default, { channelId: channelId })
-      );
-    }
-  }]);
-
-  return Messages;
-}(_react.Component);
-
-exports.default = Messages;
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(MessagesList);
 
 /***/ }),
 /* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _store = __webpack_require__(19);
+
+var _store2 = _interopRequireDefault(_store);
+
+var _reactRedux = __webpack_require__(74);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function NameEntry(props) {
+
+  return _react2.default.createElement(
+    'form',
+    { className: 'form-inline' },
+    _react2.default.createElement(
+      'label',
+      { htmlFor: 'name' },
+      'Your name:'
+    ),
+    _react2.default.createElement('input', {
+      type: 'text',
+      name: 'name',
+      placeholder: 'Enter your name',
+      className: 'form-control',
+      onChange: props.handleChange,
+      value: props.name
+    })
+  );
+}
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    name: state.name
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+  return {
+    handleChange: function handleChange(evt) {
+      dispatch((0, _store.updateName)(evt.target.value));
+    }
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(NameEntry);
+
+/***/ }),
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18076,91 +18062,6 @@ var _react2 = _interopRequireDefault(_react);
 var _store = __webpack_require__(19);
 
 var _store2 = _interopRequireDefault(_store);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var NameEntry = function (_Component) {
-  _inherits(NameEntry, _Component);
-
-  function NameEntry() {
-    _classCallCheck(this, NameEntry);
-
-    var _this = _possibleConstructorReturn(this, (NameEntry.__proto__ || Object.getPrototypeOf(NameEntry)).call(this));
-
-    _this.state = _store2.default.getState();
-    _this.handleChange = _this.handleChange.bind(_this);
-    return _this;
-  }
-
-  _createClass(NameEntry, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.unsubscribe = _store2.default.subscribe(function () {
-        return _this2.setState(_store2.default.getState());
-      });
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      this.unsubscribe();
-    }
-  }, {
-    key: 'handleChange',
-    value: function handleChange(evt) {
-      _store2.default.dispatch((0, _store.updateName)(evt.target.value));
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'form',
-        { className: 'form-inline' },
-        _react2.default.createElement(
-          'label',
-          { htmlFor: 'name' },
-          'Your name:'
-        ),
-        _react2.default.createElement('input', {
-          type: 'text',
-          name: 'name',
-          placeholder: 'Enter your name',
-          className: 'form-control',
-          onChange: this.handleChange,
-          value: this.state.name
-        })
-      );
-    }
-  }]);
-
-  return NameEntry;
-}(_react.Component);
-
-exports.default = NameEntry;
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(4);
-
-var _react2 = _interopRequireDefault(_react);
 
 var _NameEntry = __webpack_require__(170);
 

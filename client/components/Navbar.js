@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import store from '../store';
+
 import NameEntry from './NameEntry';
 
 export default class Navbar extends Component {
@@ -12,3 +14,5 @@ export default class Navbar extends Component {
     );
   }
 }
+
+

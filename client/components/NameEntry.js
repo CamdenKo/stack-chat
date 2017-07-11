@@ -1,27 +1,10 @@
 import React, { Component } from 'react';
 import store, { updateName } from '../store';
+import {connect} from 'react-redux'
 
-export default class NameEntry extends Component {
 
-  constructor () {
-    super();
-    this.state = store.getState();
-    this.handleChange = this.handleChange.bind(this);
-  }
+function NameEntry (props) {
 
-  componentDidMount () {
-    this.unsubscribe = store.subscribe(() => this.setState(store.getState()));
-  }
-
-  componentWillUnmount () {
-    this.unsubscribe();
-  }
-
-  handleChange (evt) {
-    store.dispatch(updateName(evt.target.value));
-  }
-
-  render () {
     return (
       <form className="form-inline">
         <label htmlFor="name">Your name:</label>
@@ -30,10 +13,24 @@ export default class NameEntry extends Component {
           name="name"
           placeholder="Enter your name"
           className="form-control"
-          onChange={this.handleChange}
-          value={this.state.name}
+          onChange={props.handleChange}
+          value={props.name}
         />
       </form>
-    );
+  );
+}
+
+const mapStateToProps = function (state, ownProps) {
+  return {
+    name: state.name
   }
 }
+
+const mapDispatchToProps = function (dispatch, ownProps) {
+  return  {handleChange(evt){
+    dispatch(updateName(evt.target.value))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NameEntry)

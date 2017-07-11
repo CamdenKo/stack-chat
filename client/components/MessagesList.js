@@ -2,26 +2,13 @@ import React, { Component } from 'react';
 import Message from './Message';
 import NewMessageEntry from './NewMessageEntry';
 import store from '../store';
+import { connect } from 'react-redux'
 
-export default class Messages extends Component {
+export function MessagesList (props) {
 
-  constructor () {
-    super();
-    this.state = store.getState();
-  }
 
-  componentDidMount () {
-    this.unsubscribe = store.subscribe(() => this.setState(store.getState()));
-  }
-
-  componentWillUnmount () {
-    this.unsubscribe();
-  }
-
-  render () {
-
-    const channelId = Number(this.props.match.params.channelId); // because it's a string "1", not a number!
-    const messages = this.state.messages;
+    const channelId = Number(props.channelId); // because it's a string "1", not a number!
+    const messages = props.messages;
     const filteredMessages = messages.filter(message => message.channelId === channelId);
 
     return (
@@ -33,4 +20,12 @@ export default class Messages extends Component {
       </div>
     );
   }
+
+function mapStateToProps(state, oldProps){
+  return{
+    messages: state.messages,
+    channelId: oldProps.match.params.channelId
+  }
 }
+
+export default connect(mapStateToProps)(MessagesList)
