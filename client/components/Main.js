@@ -4,28 +4,32 @@ import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import MessagesList from './MessagesList';
 import NewChannelEntry from './NewChannelEntry';
-import store, { fetchMessages } from '../store';
+import store, { fetchMessages , fetchChannels} from '../store';
+import { Provider } from 'react-redux'
 
 export default class Main extends Component {
 
   componentDidMount () {
     const messagesThunk = fetchMessages();
     store.dispatch(messagesThunk);
+    store.dispatch(fetchChannels())
   }
 
   render () {
     return (
-      <div>
-        <Sidebar />
-        <Navbar />
-        <main>
-          <Switch>
-            <Route path="/new-channel" component={NewChannelEntry} />
-            <Route path="/channels/:channelId" component={MessagesList} />
-            <Redirect to="/channels/1" />
-          </Switch>
-        </main>
-      </div>
+      <Provider store = {store}>
+        <div>
+          <Sidebar />
+          <Navbar />
+          <main>
+            <Switch>
+              <Route path="/new-channel" component={NewChannelEntry} />
+              <Route path="/channels/:channelId" component={MessagesList} />
+              <Redirect to="/channels/1" />
+            </Switch>
+          </main>
+        </div>
+      </Provider>
     );
   }
 }

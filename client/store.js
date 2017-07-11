@@ -10,7 +10,9 @@ import socket from './socket';
 const initialState = {
   messages: [],
   name: 'Reggie',
-  newMessageEntry: ''
+  newMessageEntry: '',
+  channels: [],
+  newChannelEntry: '',
 };
 
 // ACTION TYPES
@@ -19,6 +21,9 @@ const UPDATE_NAME = 'UPDATE_NAME';
 const GET_MESSAGE = 'GET_MESSAGE';
 const GET_MESSAGES = 'GET_MESSAGES';
 const WRITE_MESSAGE = 'WRITE_MESSAGE';
+const GET_CHANNELS = 'GET_CHANNELS';
+const MAKE_CHANNEL = 'MAKE_CHANNEL';
+const GET_CHANNEL = 'GET_CHANNEL';
 
 // ACTION CREATORS
 
@@ -39,6 +44,23 @@ export function getMessages (messages) {
 
 export function writeMessage (content) {
   const action = { type: WRITE_MESSAGE, content };
+  return action;
+}
+
+export function getChannels (channels){
+  return {
+    type: GET_CHANNELS,
+    channels
+  }
+}
+
+export function getChannel (channel){
+  const action = { type: GET_CHANNEL, channel}
+  return action;
+}
+
+export function createChannel (channelName) {
+  const action = { type: MAKE_CHANNEL, channelName};
   return action;
 }
 
@@ -67,9 +89,27 @@ export function postMessage (message) {
         socket.emit('new-message', newMessage);
       });
   }
-
 }
 
+export function fetchChannels () {
+  return function thunk (dispatch){
+    return axios.get('/api/channels')
+    .then(res => res.data)
+    .then(channels => {
+      dispatch(getChannels(channels))
+    })
+  }
+}
+
+export function postChannel (channelName) {
+  return function thunk (dispatch) {
+    return axios.post('/api/channels', channelName)
+    .then(res => res.data)
+    .then(newChannel => {
+      dispatch(getChannel(newChannel))
+    })
+  }
+}
 // REDUCER
 
 /**
@@ -121,6 +161,24 @@ function reducer (state = initialState, action) {
         ...state,
         newMessageEntry: action.content
       };
+
+    case GET_CHANNELS:
+      return {
+        ...state,
+        channels: action.channels
+      }
+
+    case MAKE_CHANNEL:
+      return {
+        ...state,
+        newChannelEntry: action.channelName
+      }
+
+    case GET_CHANNEL:
+      return {
+        ...state,
+        channels: [...state.channels, action.channel]
+      }
 
     default:
       return state;

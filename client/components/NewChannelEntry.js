@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
+import {connect} from 'react-redux'
 
-export default function NewChannelEntry (props) {
+
+function NewChannelEntry () {
+
   return (
     <form>
       <div className="form-group">
@@ -15,3 +17,15 @@ export default function NewChannelEntry (props) {
 }
 
 /** Write your `connect` component below! **/
+
+const mapStateToProps = function (state) {
+  return {
+    newChannelEntry = state.newChannelEntry
+  }
+}
+const mapDispatchToProps = function (dispatch) {
+  return {
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewChannelEntry)
